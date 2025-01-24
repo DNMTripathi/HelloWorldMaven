@@ -3,23 +3,22 @@ pipeline {
     stages {
         stage('Build') { 
             steps {
-                withMaven(maven : 'apache-maven-3.6.0'){
+                withMaven(maven : 'apache_maven_3.9.6'){
                         sh "mvn clean compile"
                 }
             }
         }
         stage('Test'){
             steps {
-                withMaven(maven : 'apache-maven-3.6.0'){
+                withMaven(maven : 'apache_maven_3.9.6'){
                         sh "mvn test"
                 }
-
             }
         }
         stage('build && SonarQube analysis') {
             steps {
-                withSonarQubeEnv('sonar.tools.devops.****') {
-                    sh 'sonar-scanner -Dsonar.projectKey=myProject -Dsonar.sources=./src'
+                withSonarQubeEnv('sonarserver') {
+                    sh '/home/vagrant/sw/maven/bin/mvn sonar:sonar -Dsonar.projectKey=HelloWorldMaven -Dsonar.sources=./src/main/'
                 }
             }
         }
@@ -32,13 +31,12 @@ pipeline {
                     waitForQualityGate abortPipeline: true
                 }
             }
-			}
+}
         stage('Deploy') {
             steps {
-               withMaven(maven : 'apache-maven-3.6.0'){
+               withMaven(maven : 'apache_maven_3.9.6'){
                         sh "mvn deploy"
                 }
-
             }
         }
     }
